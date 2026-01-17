@@ -1,0 +1,14 @@
+# Stage 1: Build & Test
+FROM node:18-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm test  # Quality Gate: The build fails if tests fail
+
+# Stage 2: Production Runtime
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=build /app .
+EXPOSE 3000
+CMD ["node", "app.js"]
